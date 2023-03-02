@@ -59,7 +59,6 @@ router.patch('/reviews/:restaurantId/:id', [
     check('comment', 'The comment must be mandatory').not().isEmpty(),
     check('rating', 'The rating must be mandatory').not().isEmpty(),
     check('rating', 'The rating must a numeric').isNumeric(),
-    getRestaurantById,
     validateFields,
 ] ,updateReview)
 
