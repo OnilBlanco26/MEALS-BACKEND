@@ -6,7 +6,13 @@ const { validateFields } = require("../middlewares/validateField.middleware");
 
 const router = new Router()
 
-router.post('/', createRestaurant)
+router.post('/',
+[
+    check('name', 'The name must be mandatory').not().isEmpty(),
+    check('address', 'The address must be mandatory').not().isEmpty(),
+    validateFields
+] 
+, createRestaurant)
 
 router.get('/', getAllRestaurants)
 
