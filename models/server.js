@@ -10,6 +10,7 @@ const hpp = require('hpp');
 const globalErrorHandler = require('../controllers/error.controller');
 const AppError = require('../utils/appError');
 const { restaurantsRouter } = require('../routes/restaurants.route');
+const { mealsRouter } = require('../routes/meals.route');
 
 class Server {
   constructor() {
@@ -52,6 +53,7 @@ class Server {
   routes() {
     this.app.use(this.paths.users, usersRouter);
     this.app.use(this.paths.restaurants, restaurantsRouter)
+    this.app.use(this.paths.meals, mealsRouter)
 
     this.app.all('*', (req, res, next) => {
         return next(
