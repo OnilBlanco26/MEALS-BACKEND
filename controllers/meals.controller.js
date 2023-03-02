@@ -38,7 +38,69 @@ const createMeals = catchAsync(async(req,res,next) => {
     
 })
 
+const getAllMeals = catchAsync(async(req,res,next) => {
+    const meals = await Meal.findAll({
+        attributes: {exclude: ['createdAt', 'updatedAt', 'status']},
+        where: {
+            status: true
+        }
+    })
+
+    if(meals.length === 0) {
+        return next(new AppError('No meals found in the list', 400))
+    }
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Here is the list with all the meals',
+        meals
+    })
+})
+
+const findMealById = catchAsync(async(req, res,next) => {
+    const {meal} = req;
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Here are the meals you are looking for',
+        meal
+    })
+})
+
+const updateMeals = catchAsync(async(req, res, next) => {
+    const {meal} = req;
+    const {name, price} = req.body
+
+    const updateMeal = await meal.update({
+        name,
+        price
+    })
+
+    res.status(200).json({
+        status: 'success',
+        message: 'The meal was updated succesfully',
+        updateMeal
+    })
+
+})
+
+const deleteMeals = catchAsync(async(req, res, next) => {
+    const {meal} = req
+
+    await meal.update({status: false})
+
+    res.status(200).json({
+        status: 'success',
+        message: 'The meal has been successfully deleted'
+    })
+
+})
+
 
 module.exports = {
-    createMeals
+    createMeals,
+    getAllMeals,
+    findMealById,
+    updateMeals,
+    deleteMeals
 }
