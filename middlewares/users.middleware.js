@@ -6,18 +6,19 @@ const catchAsync = require("../utils/catchAsync");
 const validateUserByEmail = catchAsync(async(req,res,next) => {
     const {email}= req.body
 
-    const user = User.findOne({
+    const user = await User.findOne({
         where: {
             email: email.toLowerCase()
         }
     })
 
+
     if (user && !user.status) {
-        return res.status(400).json({
-          status: 'error',
-          message:
-            'The user has an account, but it is deactivated, please contact the administrator to activate it.',
-        });
+        return next(new AppError('The account sems to be disbaled, talk to the administrator to enable it.'));
+    }
+
+    if(user) {
+        return next(new AppError('The email has been already exist!'))
     }
     req.user = user;
     next()
