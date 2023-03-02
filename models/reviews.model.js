@@ -24,6 +24,12 @@ const Review = db.define('review', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'active',
+    type: DataTypes.ENUM('active', 'deleted')
+  }
 });
 
 module.exports = Review;
