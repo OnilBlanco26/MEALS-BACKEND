@@ -11,6 +11,8 @@ const globalErrorHandler = require('../controllers/error.controller');
 const AppError = require('../utils/appError');
 const { restaurantsRouter } = require('../routes/restaurants.route');
 const { mealsRouter } = require('../routes/meals.route');
+const { ordersRouter } = require('../routes/orders.route');
+const initModel = require('./initModels');
 
 class Server {
   constructor() {
@@ -54,6 +56,7 @@ class Server {
     this.app.use(this.paths.users, usersRouter);
     this.app.use(this.paths.restaurants, restaurantsRouter)
     this.app.use(this.paths.meals, mealsRouter)
+    this.app.use(this.paths.orders, ordersRouter)
 
     this.app.all('*', (req, res, next) => {
         return next(
@@ -68,6 +71,8 @@ class Server {
     db.authenticate()
       .then(() => console.log('Database authenticate'))
       .catch(err => console.log(err));
+
+      initModel()
 
     db.sync()
       .then(() => console.log('database synced'))
