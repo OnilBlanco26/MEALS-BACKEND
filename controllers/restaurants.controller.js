@@ -22,6 +22,39 @@ const createRestaurant = catchAsync(async(req,res,next) => {
     })
 })
 
+const getAllRestaurants = catchAsync(async(req, res, next) => {
+    const restaurants = await Restaurant.findAll({
+        attributes: {exclude: ['createdAt', 'updatedAt', 'status']},
+        where: {
+            status: true
+        }
+    })
+
+    if(restaurants.length === 0) {
+        return next(new AppError('No restaurants found in the list'))
+    }
+
+    res.status(200).json({
+        status: 'success',
+        message: "Here is the list of all restaurants",
+        restaurants
+    })
+})
+ 
+const findRestaurantById = catchAsync(async(req, res, next) => {
+    const {restaurant} = req
+
+    res.status(201).json({
+        status: 'success',
+        message: 'The restaurant was found successfully',
+        restaurant
+    })
+})
+
+
+
 module.exports = {
-    createRestaurant
+    createRestaurant,
+    getAllRestaurants,
+    findRestaurantById
 }
