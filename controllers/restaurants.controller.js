@@ -51,10 +51,40 @@ const findRestaurantById = catchAsync(async(req, res, next) => {
     })
 })
 
+const updateRestaurant = catchAsync(async(req, res, next) => {
+    const {restaurant} = req;
+    const {name, address} = req.body
 
+    const updateRestaurant = await restaurant.update({
+        name,
+        address
+    })
+
+    res.status(200).json({
+        status: 'success',
+        message: 'The restaurant was updated succesfully',
+        updateRestaurant
+    })
+
+
+}) 
+
+const deleteRestaurant = catchAsync(async(req, res, next) => {
+    const {restaurant} = req
+
+    await restaurant.update({status: false})
+
+    res.status(200).json({
+        status: 'success',
+        message: 'The restaurant has been successfully deleted'
+    })
+
+})
 
 module.exports = {
     createRestaurant,
     getAllRestaurants,
-    findRestaurantById
+    findRestaurantById,
+    updateRestaurant,
+    deleteRestaurant
 }
