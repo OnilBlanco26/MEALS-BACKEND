@@ -127,11 +127,14 @@ const updateReview = catchAsync(async(req,res,next) => {
     const review = await Review.findOne({
         where: {
             id,
-            userId: sessionUser.id,
             restaurantId,
             status: 'active'
         }
     })
+
+    if(review !== null && review.userId !== sessionUser.id) {
+        return next(new AppError('This review belongs to another user', 400))
+    }
 
     if(!review) {
         return next(new AppError('Review not found', 400))
