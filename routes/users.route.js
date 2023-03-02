@@ -1,6 +1,6 @@
 const {Router} = require('express')
 const { check } = require('express-validator')
-const { createUser, login, updateUser, deleteUser } = require('../controllers/users.controller')
+const { createUser, login, updateUser, deleteUser, getOrders, getOrderById } = require('../controllers/users.controller')
 const { validateUserByEmail, validateifExistUserByEmail, validateUserById, protectAccountOwner, protect } = require('../middlewares/users.middleware')
 const { validateFields } = require('../middlewares/validateField.middleware')
 
@@ -29,7 +29,9 @@ router.patch('/:id', protectAccountOwner ,validateUserById ,updateUser)
 
 router.delete('/:id', protectAccountOwner ,validateUserById,deleteUser)
 
-// router.get('/orders', getOrders)
+router.get('/orders',getOrders)
+
+router.get('/orders/:id', getOrderById)
 
 // router.get('/orders/:id', getOrder)
 
