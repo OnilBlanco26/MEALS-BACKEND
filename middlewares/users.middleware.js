@@ -3,6 +3,32 @@ const AppError = require("../utils/appError");
 const jwt = require('jsonwebtoken');
 const catchAsync = require("../utils/catchAsync");
 
+const validateUserById = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+  
+      const user = await User.findOne({
+        where: {
+          id,
+          status: true,
+        },
+      });
+  
+      if (!user) {
+        return next(new AppError('User wast not foundd', 404));
+      }
+  
+      req.user = user;
+      next();
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: 'fail',
+        message: 'Internal server error',
+      });
+    }
+  };
+
 const validateUserByEmail = catchAsync(async(req,res,next) => {
     const {email}= req.body
 
@@ -109,6 +135,7 @@ const protect = catchAsync(async (req, res, next) => {
   };
 
   module.exports = {
+    validateUserById,
     validateUserByEmail,
     validateifExistUserByEmail,
     protect,
