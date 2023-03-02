@@ -3,6 +3,26 @@ const AppError = require("../utils/appError");
 const jwt = require('jsonwebtoken');
 const catchAsync = require("../utils/catchAsync");
 
+const validateUserByEmail = catchAsync(async(req,res,next) => {
+    const {email}= req.body
+
+    const user = User.findOne({
+        where: {
+            email: email.toLowerCase()
+        }
+    })
+
+    if (user && !user.status) {
+        return res.status(400).json({
+          status: 'error',
+          message:
+            'The user has an account, but it is deactivated, please contact the administrator to activate it.',
+        });
+    }
+    req.user = user;
+    next()
+})
+
 const validateifExistUserByEmail = catchAsync(async(req,res,next) => {
     const {email} = req.body
 
@@ -88,6 +108,7 @@ const protect = catchAsync(async (req, res, next) => {
   };
 
   module.exports = {
+    validateUserByEmail,
     validateifExistUserByEmail,
     protect,
     protectAccountOwner,
