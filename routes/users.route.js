@@ -1,7 +1,7 @@
 const {Router} = require('express')
 const { check } = require('express-validator')
-const { createUser } = require('../controllers/users.controller')
-const { validateUserByEmail } = require('../middlewares/users.middleware')
+const { createUser, login, updateUser, deleteUser } = require('../controllers/users.controller')
+const { validateUserByEmail, validateifExistUserByEmail } = require('../middlewares/users.middleware')
 const { validateFields } = require('../middlewares/validateField.middleware')
 
 const router = Router()
@@ -15,11 +15,17 @@ router.post('/signup', [
     validateFields,
 ], createUser)
 
-// router.post('/login', login)
+router.post('/login',[
+    check('email', 'The email must be mandatory').not().isEmpty(),
+    check('email', 'Must be in email format').isEmail(),
+    check('password', 'The password must be mandatory').not().isEmpty(),
+    validateifExistUserByEmail,
+    validateFields
+] ,login)
 
-// router.patch('/:id', updateUser)
+router.patch('/:id', updateUser)
 
-// router.delete('/:id', deleteUser)
+router.delete('/:id', deleteUser)
 
 // router.get('/orders', getOrders)
 

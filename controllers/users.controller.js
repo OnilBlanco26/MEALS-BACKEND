@@ -55,7 +55,35 @@ const login = catchAsync(async (req, res, next) => {
   })
 });
 
+const updateUser = catchAsync(async(req, res, next) => {
+    const {user} = req;
+    const {name, email} = req.body
+
+    const updateUser = await user.update({
+        name: name.toLowerCase(),
+        email: email.toLowerCase()
+    })
+
+    res.status(200).json({
+        status: 'success',
+        message: 'The user was updated succesfully',
+        updateUser
+    })
+})
+
+const deleteUser = catchAsync(async(req, res , next) => {
+    const {user} = req;
+    await user.update({status: false})
+
+    res.status(200).json({
+        status: 'success',
+        message: 'user delete was succesfully',
+      });
+})
+
 module.exports = {
   createUser,
-  login
+  login,
+  updateUser,
+  deleteUser
 };
