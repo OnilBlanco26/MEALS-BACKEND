@@ -31,3 +31,5 @@ const Order = db.define('order', {
     type: DataTypes.ENUM('active', 'cancelled', 'completed'),
   },
 });
+
+module.exports = Order
