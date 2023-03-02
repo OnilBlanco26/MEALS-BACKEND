@@ -1,3 +1,4 @@
+const { rateLimit } = require('express-rate-limit');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -6,6 +7,8 @@ const { db } = require('../database/db');
 const { default: helmet } = require('helmet');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const globalErrorHandler = require('../controllers/error.controller');
+const AppError = require('../utils/appError');
 
 class Server {
   constructor() {
@@ -47,6 +50,14 @@ class Server {
 
   routes() {
     this.app.use(this.paths.users, usersRouter);
+
+    this.app.all('*', (req, res, next) => {
+        return next(
+          new AppError(`Can't FIND ${req.originalUrl} on this server!`, 404)
+        );
+      });
+  
+      this.app.use(globalErrorHandler);
   }
 
   database() {
