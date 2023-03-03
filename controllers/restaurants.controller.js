@@ -29,6 +29,14 @@ const getAllRestaurants = catchAsync(async (req, res, next) => {
     where: {
       status: true,
     },
+    include: [
+        {
+            model: Review,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'status']
+            }
+        }
+    ]
   });
 
   if (restaurants.length === 0) {

@@ -1,4 +1,5 @@
 const Restaurant = require('../models/restaurants.model');
+const Review = require('../models/reviews.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -11,6 +12,14 @@ const getRestaurantById = catchAsync(async (req, res, next) => {
       id,
       status: true,
     },
+    include: [
+        {
+            model: Review,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'status']
+            }
+        }
+    ]
   });
 
   if (!restaurant) {
