@@ -152,6 +152,47 @@ const updateReview = catchAsync(async(req,res,next) => {
     })
 })
 
+const deleteReview = catchAsync(async(req,res,next) => {
+    const {sessionUser} = req;
+    const {restaurantId, id} = req.params
+
+    const restaurant = await Restaurant.findOne({
+        where: {
+            id: restaurantId,
+            status: true
+        }
+    })
+
+    if(!restaurant) {
+        return next(new AppError('Restaurant not found', 400))
+    }
+
+    const review = await Review.findOne({
+        where: {
+            id,
+            restaurantId,
+            status: 'active'
+        }
+    })
+
+    if(review !== null && review.userId !== sessionUser.id) {
+        return next(new AppError('The order belongs to another user'))
+    }
+
+    if(!review) {
+        return next(new AppError('Review not found', 400))
+    }
+
+    await review.update({status: 'deleted'})
+
+    res.status(200).json({
+        status: 'success',
+        message: 'The review has been deleted succesfully'
+    })
+
+
+})
+
 module.exports = {
     createRestaurant,
     getAllRestaurants,
@@ -159,5 +200,6 @@ module.exports = {
     updateRestaurant,
     deleteRestaurant,
     createReview,
-    updateReview
+    updateReview,
+    deleteReview
 }
