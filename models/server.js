@@ -45,7 +45,7 @@ class Server {
       this.app.use(morgan('dev'));
     }
 
-    this.app.use('/api/v1', this.limiter)
+    this.app.use('/api/v1', this.limiter);
 
     this.app.use(cors());
 
@@ -54,17 +54,17 @@ class Server {
 
   routes() {
     this.app.use(this.paths.users, usersRouter);
-    this.app.use(this.paths.restaurants, restaurantsRouter)
-    this.app.use(this.paths.meals, mealsRouter)
-    this.app.use(this.paths.orders, ordersRouter)
+    this.app.use(this.paths.restaurants, restaurantsRouter);
+    this.app.use(this.paths.meals, mealsRouter);
+    this.app.use(this.paths.orders, ordersRouter);
 
     this.app.all('*', (req, res, next) => {
-        return next(
-          new AppError(`Can't FIND ${req.originalUrl} on this server!`, 404)
-        );
-      });
-  
-      this.app.use(globalErrorHandler);
+      return next(
+        new AppError(`Can't FIND ${req.originalUrl} on this server!`, 404)
+      );
+    });
+
+    this.app.use(globalErrorHandler);
   }
 
   database() {
@@ -72,7 +72,7 @@ class Server {
       .then(() => console.log('Database authenticate'))
       .catch(err => console.log(err));
 
-      initModel()
+    initModel();
 
     db.sync()
       .then(() => console.log('database synced'))

@@ -1,205 +1,200 @@
-const Restaurant = require('../models/restaurants.model')
-const Review = require('../models/reviews.model')
-const AppError = require('../utils/appError')
-const catchAsync = require('../utils/catchAsync')
+const Restaurant = require('../models/restaurants.model');
+const Review = require('../models/reviews.model');
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
 
-const createRestaurant = catchAsync(async(req,res,next) => {
-    const {name, address, rating} = req.body
+const createRestaurant = catchAsync(async (req, res, next) => {
+  const { name, address, rating } = req.body;
 
-    if(rating > 5  || rating < 0) {
-        return next(new AppError('Rating must be between 0 and 5'))
-    }
+  if (rating > 5 || rating < 0) {
+    return next(new AppError('Rating must be between 0 and 5'));
+  }
 
-    const newRestaurant = await Restaurant.create({
-        name: name.toLowerCase(),
-        address,
-        rating
-    })
+  const newRestaurant = await Restaurant.create({
+    name: name.toLowerCase(),
+    address,
+    rating,
+  });
 
-    res.status(201).json({
-        status: 'success',
-        message: 'The Restaurant has been created succesfully',
-        newRestaurant
-    })
-})
+  res.status(201).json({
+    status: 'success',
+    message: 'The Restaurant has been created succesfully',
+    newRestaurant,
+  });
+});
 
-const getAllRestaurants = catchAsync(async(req, res, next) => {
-    const restaurants = await Restaurant.findAll({
-        attributes: {exclude: ['createdAt', 'updatedAt', 'status']},
-        where: {
-            status: true
-        }
-    })
+const getAllRestaurants = catchAsync(async (req, res, next) => {
+  const restaurants = await Restaurant.findAll({
+    attributes: { exclude: ['createdAt', 'updatedAt', 'status'] },
+    where: {
+      status: true,
+    },
+  });
 
-    if(restaurants.length === 0) {
-        return next(new AppError('No restaurants found in the list'))
-    }
+  if (restaurants.length === 0) {
+    return next(new AppError('No restaurants found in the list'));
+  }
 
-    res.status(200).json({
-        status: 'success',
-        message: "Here is the list of all restaurants",
-        restaurants
-    })
-})
- 
-const findRestaurantById = catchAsync(async(req, res, next) => {
-    const {restaurant} = req
+  res.status(200).json({
+    status: 'success',
+    message: 'Here is the list of all restaurants',
+    restaurants,
+  });
+});
 
-    res.status(201).json({
-        status: 'success',
-        message: 'The restaurant was found successfully',
-        restaurant
-    })
-})
+const findRestaurantById = catchAsync(async (req, res, next) => {
+  const { restaurant } = req;
 
-const updateRestaurant = catchAsync(async(req, res, next) => {
-    const {restaurant} = req;
-    const {name, address} = req.body
+  res.status(201).json({
+    status: 'success',
+    message: 'The restaurant was found successfully',
+    restaurant,
+  });
+});
 
-    const updateRestaurant = await restaurant.update({
-        name,
-        address
-    })
+const updateRestaurant = catchAsync(async (req, res, next) => {
+  const { restaurant } = req;
+  const { name, address } = req.body;
 
-    res.status(200).json({
-        status: 'success',
-        message: 'The restaurant was updated succesfully',
-        updateRestaurant
-    })
+  const updateRestaurant = await restaurant.update({
+    name,
+    address,
+  });
 
+  res.status(200).json({
+    status: 'success',
+    message: 'The restaurant was updated succesfully',
+    updateRestaurant,
+  });
+});
 
-}) 
+const deleteRestaurant = catchAsync(async (req, res, next) => {
+  const { restaurant } = req;
 
-const deleteRestaurant = catchAsync(async(req, res, next) => {
-    const {restaurant} = req
+  await restaurant.update({ status: false });
 
-    await restaurant.update({status: false})
+  res.status(200).json({
+    status: 'success',
+    message: 'The restaurant has been successfully deleted',
+  });
+});
 
-    res.status(200).json({
-        status: 'success',
-        message: 'The restaurant has been successfully deleted'
-    })
+const createReview = catchAsync(async (req, res, next) => {
+  console.log('estoy entrando');
+  const { sessionUser } = req;
+  const { comment, rating } = req.body;
+  const { id } = req.params;
 
-})
+  if (rating > 5 || rating < 0) {
+    return next(new AppError('The rating must be between 0 and 5', 400));
+  }
 
-const createReview = catchAsync(async(req,res,next) => {
-    console.log('estoy entrando')
-    const {sessionUser} = req;
-    const {comment, rating} = req.body
-    const {id} = req.params
+  const newReview = await Review.create({
+    userId: sessionUser.id,
+    comment,
+    restaurantId: id,
+    rating,
+  });
 
-    if(rating > 5 || rating < 0) {
-        return next(new AppError('The rating must be between 0 and 5', 400))
-    }
+  console.log(newReview);
 
-    const newReview = await Review.create({
-        userId: sessionUser.id,
-        comment,
-        restaurantId: id,
-        rating
-    })
+  res.status(200).json({
+    status: 'success',
+    message: 'The Review was created succesfully',
+    newReview,
+  });
+});
 
-    console.log(newReview)
+const updateReview = catchAsync(async (req, res, next) => {
+  const { sessionUser } = req;
+  const { restaurantId, id } = req.params;
+  const { comment, rating } = req.body;
 
-    res.status(200).json({
-        status: 'success',
-        message: 'The Review was created succesfully',
-        newReview
-    })
-})
+  const restaurant = await Restaurant.findOne({
+    where: {
+      id: restaurantId,
+      status: true,
+    },
+  });
 
-const updateReview = catchAsync(async(req,res,next) => {
-    const {sessionUser} = req;
-    const {restaurantId, id} = req.params 
-    const {comment, rating} = req.body 
+  if (!restaurant) {
+    return next(new AppError('Restaurant not found', 400));
+  }
 
-    const restaurant = await Restaurant.findOne({
-        where: {
-            id: restaurantId,
-            status: true
-        }
-    })
+  const review = await Review.findOne({
+    where: {
+      id,
+      restaurantId,
+      status: 'active',
+    },
+  });
 
-    if(!restaurant) {
-        return next(new AppError('Restaurant not found', 400))
-    }
+  if (review !== null && review.userId !== sessionUser.id) {
+    return next(new AppError('This review belongs to another user', 400));
+  }
 
-    const review = await Review.findOne({
-        where: {
-            id,
-            restaurantId,
-            status: 'active'
-        }
-    })
+  if (!review) {
+    return next(new AppError('Review not found', 400));
+  }
 
-    if(review !== null && review.userId !== sessionUser.id) {
-        return next(new AppError('This review belongs to another user', 400))
-    }
+  const updateR = await review.update({
+    comment,
+    rating,
+  });
 
-    if(!review) {
-        return next(new AppError('Review not found', 400))
-    }
+  res.status(200).json({
+    status: 'success',
+    message: 'The review has been updated correctly',
+    updateR,
+  });
+});
 
-    const updateR = await review.update({
-        comment,
-        rating
-    })
+const deleteReview = catchAsync(async (req, res, next) => {
+  const { sessionUser } = req;
+  const { restaurantId, id } = req.params;
 
-    res.status(200).json({
-        status: 'success',
-        message: 'The review has been updated correctly',
-        updateR
-    })
-})
+  const restaurant = await Restaurant.findOne({
+    where: {
+      id: restaurantId,
+      status: true,
+    },
+  });
 
-const deleteReview = catchAsync(async(req,res,next) => {
-    const {sessionUser} = req;
-    const {restaurantId, id} = req.params
+  if (!restaurant) {
+    return next(new AppError('Restaurant not found', 400));
+  }
 
-    const restaurant = await Restaurant.findOne({
-        where: {
-            id: restaurantId,
-            status: true
-        }
-    })
+  const review = await Review.findOne({
+    where: {
+      id,
+      restaurantId,
+      status: 'active',
+    },
+  });
 
-    if(!restaurant) {
-        return next(new AppError('Restaurant not found', 400))
-    }
+  if (review !== null && review.userId !== sessionUser.id) {
+    return next(new AppError('The order belongs to another user'));
+  }
 
-    const review = await Review.findOne({
-        where: {
-            id,
-            restaurantId,
-            status: 'active'
-        }
-    })
+  if (!review) {
+    return next(new AppError('Review not found', 400));
+  }
 
-    if(review !== null && review.userId !== sessionUser.id) {
-        return next(new AppError('The order belongs to another user'))
-    }
+  await review.update({ status: 'deleted' });
 
-    if(!review) {
-        return next(new AppError('Review not found', 400))
-    }
-
-    await review.update({status: 'deleted'})
-
-    res.status(200).json({
-        status: 'success',
-        message: 'The review has been deleted succesfully'
-    })
-
-
-})
+  res.status(200).json({
+    status: 'success',
+    message: 'The review has been deleted succesfully',
+  });
+});
 
 module.exports = {
-    createRestaurant,
-    getAllRestaurants,
-    findRestaurantById,
-    updateRestaurant,
-    deleteRestaurant,
-    createReview,
-    updateReview,
-    deleteReview
-}
+  createRestaurant,
+  getAllRestaurants,
+  findRestaurantById,
+  updateRestaurant,
+  deleteRestaurant,
+  createReview,
+  updateReview,
+  deleteReview,
+};

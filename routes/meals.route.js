@@ -1,44 +1,52 @@
-const { Router } = require("express");
-const { check } = require("express-validator");
-const { createMeals, getAllMeals, findMealById, updateMeals, deleteMeals } = require("../controllers/meals.controller");
-const { getMealById } = require("../middlewares/meals.middleware");
-const { protect, restricTo } = require("../middlewares/users.middleware");
-const { validateFields } = require("../middlewares/validateField.middleware");
+const { Router } = require('express');
+const { check } = require('express-validator');
+const {
+  createMeals,
+  getAllMeals,
+  findMealById,
+  updateMeals,
+  deleteMeals,
+} = require('../controllers/meals.controller');
+const { getMealById } = require('../middlewares/meals.middleware');
+const { protect, restricTo } = require('../middlewares/users.middleware');
+const { validateFields } = require('../middlewares/validateField.middleware');
 
+const router = new Router();
 
-const router = new Router()
-
-router.post('/:id', [
+router.post(
+  '/:id',
+  [
     check('name', 'The name must be mandatory').not().isEmpty(),
     check('price', 'The price must be mandatory').not().isEmpty(),
     check('price', 'The price must be a number').isNumeric(),
     validateFields,
     protect,
-    restricTo('admin')
-], createMeals)
+    restricTo('admin'),
+  ],
+  createMeals
+);
 
-router.get('/', getAllMeals)
+router.get('/', getAllMeals);
 
-router.get('/:id', getMealById, findMealById)
+router.get('/:id', getMealById, findMealById);
 
-router.use(protect)
+router.use(protect);
 
-router.patch('/:id', 
-[
+router.patch(
+  '/:id',
+  [
     check('name', 'The name must be mandatory').not().isEmpty(),
     check('price', 'The price must be mandatory').not().isEmpty(),
     check('price', 'The price must be a number').isNumeric(),
     getMealById,
     validateFields,
-    restricTo('admin')
-]
- ,updateMeals)
+    restricTo('admin'),
+  ],
+  updateMeals
+);
 
- router.delete('/:id', getMealById ,deleteMeals, restricTo('admin'))
-
-
-
+router.delete('/:id', getMealById, deleteMeals, restricTo('admin'));
 
 module.exports = {
-    mealsRouter: router
-}
+  mealsRouter: router,
+};

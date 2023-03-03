@@ -123,25 +123,26 @@ const deleteOrder = catchAsync(async (req, res, next) => {
   });
 
   if (order !== null && order.userId !== sessionUser.id) {
-    return next(new AppError('This order belongs to another user cannot remove it', 400));
+    return next(
+      new AppError('This order belongs to another user cannot remove it', 400)
+    );
   }
-
 
   if (!order) {
     return next(new AppError('Order not found', 400));
   }
 
-  await order.update({status: 'cancelled'})
+  await order.update({ status: 'cancelled' });
 
   res.status(200).json({
     status: 'success',
-    message: 'The order has been deleted succesfully'
-  })
+    message: 'The order has been deleted succesfully',
+  });
 });
 
 module.exports = {
   createOrder,
   getUserOrders,
   updateOrder,
-  deleteOrder
+  deleteOrder,
 };

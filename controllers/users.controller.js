@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const bcrypt = require('bcryptjs');
 const generateJWT = require('../utils/jwt');
 const Order = require('../models/orders.model');
-const Restaurant = require('../models/restaurants.model')
+const Restaurant = require('../models/restaurants.model');
 const AppError = require('../utils/appError');
 const Meal = require('../models/meals.model');
 const { Sequelize } = require('sequelize');
@@ -46,134 +46,136 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  const token = await generateJWT(user.id)
+  const token = await generateJWT(user.id);
 
   res.status(200).json({
     status: 'success',
     token,
     user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-    }
-  })
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  });
 });
 
-const updateUser = catchAsync(async(req, res, next) => {
-    const {user} = req;
-    const {name, email} = req.body
+const updateUser = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  const { name, email } = req.body;
 
-    const updateUser = await user.update({
-        name: name.toLowerCase(),
-        email: email.toLowerCase()
-    })
+  const updateUser = await user.update({
+    name: name.toLowerCase(),
+    email: email.toLowerCase(),
+  });
 
-    res.status(200).json({
-        status: 'success',
-        message: 'The user was updated succesfully',
-        updateUser
-    })
-})
+  res.status(200).json({
+    status: 'success',
+    message: 'The user was updated succesfully',
+    updateUser,
+  });
+});
 
-const deleteUser = catchAsync(async(req, res , next) => {
-    const {user} = req;
-    await user.update({status: false})
+const deleteUser = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  await user.update({ status: false });
 
-    res.status(200).json({
-        status: 'success',
-        message: 'user delete was succesfully',
-      });
-})
+  res.status(200).json({
+    status: 'success',
+    message: 'user delete was succesfully',
+  });
+});
 
-const getOrders= catchAsync(async(req,res,next) => {
-  const {sessionUser} = req;
+const getOrders = catchAsync(async (req, res, next) => {
+  const { sessionUser } = req;
 
   const orders = await Order.findAll({
     attributes: {
-      exclude: ['createdAt', 'updatedAt', 'status']
+      exclude: ['createdAt', 'updatedAt', 'status'],
     },
     where: {
       userId: sessionUser.id,
       [Sequelize.Op.or]: [{ status: 'active' }, { status: 'completed' }],
-    },include: [
+    },
+    include: [
       {
         model: Meal,
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'status', 'restaurantId']
+          exclude: ['createdAt', 'updatedAt', 'status', 'restaurantId'],
         },
-        where : {
-          status: true
+        where: {
+          status: true,
         },
         include: [
           {
             model: Restaurant,
             attributes: {
-              exclude: ['createdAt', 'updatedAt', 'status']
+              exclude: ['createdAt', 'updatedAt', 'status'],
             },
             where: {
-              status: true
-            }
-          }
-        ]
-      }
-    ]
-  })
+              status: true,
+            },
+          },
+        ],
+      },
+    ],
+  });
 
-  if(orders.length === 0) {
-    return next(new AppError('There are no orders in the list', 400))
+  if (orders.length === 0) {
+    return next(new AppError('There are no orders in the list', 400));
   }
 
   res.status(200).json({
     status: 'success',
     message: 'Here is the list of orders',
-    orders
-  })
-})
+    orders,
+  });
+});
 
-const getOrderById = catchAsync(async(req,res,next) => {
-  const {sessionUser} = req;
-  const {id} = req.params
- 
+const getOrderById = catchAsync(async (req, res, next) => {
+  const { sessionUser } = req;
+  const { id } = req.params;
+
   const order = await Order.findOne({
     where: {
       id,
       userId: sessionUser.id,
       [Sequelize.Op.or]: [{ status: 'active' }, { status: 'completed' }],
-    } ,include: [
+    },
+    include: [
       {
         model: Meal,
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'status', 'restaurantId']
+          exclude: ['createdAt', 'updatedAt', 'status', 'restaurantId'],
         },
-        where : {
-          status: true
+        where: {
+          status: true,
         },
         include: [
           {
             model: Restaurant,
             attributes: {
-              exclude: ['createdAt', 'updatedAt', 'status']
+              exclude: ['createdAt', 'updatedAt', 'status'],
             },
             where: {
-              status: true
-            }
-          }
-        ]
-      }
-    ]
-  })
+              status: true,
+            },
+          },
+        ],
+      },
+    ],
+  });
 
-  if(!order) {
-    return next(new AppError('The order has not been found', 400))
+  if (!order) {
+    return next(new AppError('The order has not been found', 400));
   }
 
   res.status(200).json({
     status: 'success',
     message: 'Order found correctly',
-    order
-  })
-})
+    order,
+  });
+});
 
 module.exports = {
   createUser,
@@ -181,5 +183,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getOrders,
-  getOrderById
+  getOrderById,
 };

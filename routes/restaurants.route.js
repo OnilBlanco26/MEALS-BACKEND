@@ -16,16 +16,19 @@ const { validateFields } = require('../middlewares/validateField.middleware');
 
 const router = new Router();
 
-router.post('/reviews/:id', [
+router.post(
+  '/reviews/:id',
+  [
     check('comment', 'The comment must be mandatory').not().isEmpty(),
     check('rating', 'The rating must be mandatory').not().isEmpty(),
     check('rating', 'The rating must be mandatory').isNumeric(),
     protect,
     getRestaurantById,
     validateFields,
-    restricTo('admin')
-  ], createReview)
-
+    restricTo('admin'),
+  ],
+  createReview
+);
 
 router.post(
   '/',
@@ -34,7 +37,7 @@ router.post(
     check('address', 'The address must be mandatory').not().isEmpty(),
     validateFields,
     protect,
-    restricTo('admin')
+    restricTo('admin'),
   ],
   createRestaurant
 );
@@ -52,22 +55,26 @@ router.patch(
     check('address', 'The address must be mandatory').not().isEmpty(),
     getRestaurantById,
     validateFields,
-    restricTo('admin')
+    restricTo('admin'),
   ],
   updateRestaurant
 );
 
 router.delete('/:id', getRestaurantById, deleteRestaurant, restricTo('admin'));
 
-router.patch('/reviews/:restaurantId/:id', [
+router.patch(
+  '/reviews/:restaurantId/:id',
+  [
     check('comment', 'The comment must be mandatory').not().isEmpty(),
     check('rating', 'The rating must be mandatory').not().isEmpty(),
     check('rating', 'The rating must a numeric').isNumeric(),
     validateFields,
-    restricTo('admin')
-] ,updateReview)
+    restricTo('admin'),
+  ],
+  updateReview
+);
 
-router.delete('/reviews/:restaurantId/:id', deleteReview, restricTo('admin'))
+router.delete('/reviews/:restaurantId/:id', deleteReview, restricTo('admin'));
 
 module.exports = {
   restaurantsRouter: router,
