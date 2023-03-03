@@ -40,10 +40,18 @@ const createMeals = catchAsync(async(req,res,next) => {
 
 const getAllMeals = catchAsync(async(req,res,next) => {
     const meals = await Meal.findAll({
-        attributes: {exclude: ['createdAt', 'updatedAt', 'status']},
+        attributes: {exclude: ['createdAt', 'updatedAt', 'status', 'restaurantId']},
         where: {
             status: true
-        }
+        },
+        include: [
+            {
+                model: Restaurant,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt', 'status']
+                }
+            }
+        ]
     })
 
     if(meals.length === 0) {
