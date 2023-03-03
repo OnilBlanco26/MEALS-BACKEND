@@ -88,7 +88,6 @@ const deleteRestaurant = catchAsync(async (req, res, next) => {
 });
 
 const createReview = catchAsync(async (req, res, next) => {
-  console.log('estoy entrando');
   const { sessionUser } = req;
   const { comment, rating } = req.body;
   const { id } = req.params;
@@ -104,7 +103,6 @@ const createReview = catchAsync(async (req, res, next) => {
     rating,
   });
 
-  console.log(newReview);
 
   res.status(200).json({
     status: 'success',
