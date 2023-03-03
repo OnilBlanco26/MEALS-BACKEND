@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { createOrder } = require("../controllers/orders.controller");
-const { protect } = require("../middlewares/users.middleware");
+const { createOrder, getUserOrders, updateOrder, deleteOrder } = require("../controllers/orders.controller");
+const { protect, protectAccountOwner } = require("../middlewares/users.middleware");
 const { validateFields } = require("../middlewares/validateField.middleware");
 
 const router =new Router()
@@ -17,6 +17,14 @@ router.post('/',
     protect
 ]
 ,createOrder)
+
+router.use(protect)
+
+router.get('/me', getUserOrders)
+
+router.patch('/:id' ,updateOrder)
+
+router.delete('/:id', deleteOrder)
 
 module.exports = {
     ordersRouter: router
