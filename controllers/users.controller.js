@@ -6,6 +6,7 @@ const Order = require('../models/orders.model');
 const Restaurant = require('../models/restaurants.model')
 const AppError = require('../utils/appError');
 const Meal = require('../models/meals.model');
+const { Sequelize } = require('sequelize');
 
 const createUser = catchAsync(async (req, res, next) => {
   const { name, email, password, role } = req.body;
