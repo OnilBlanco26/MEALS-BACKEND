@@ -16,6 +16,8 @@ const { validateFields } = require('../middlewares/validateField.middleware');
 
 const router = new Router();
 
+//TODO: NOTA: Se pide que todas POST PATCH DELETE solo pueda hacer peticiones un admin pero no le puse restricTo a la parte de review porque no tendria sentido
+
 router.post(
   '/reviews/:id',
   [
@@ -25,7 +27,6 @@ router.post(
     protect,
     getRestaurantById,
     validateFields,
-    restricTo('admin'),
   ],
   createReview
 );
@@ -60,7 +61,7 @@ router.patch(
   updateRestaurant
 );
 
-router.delete('/:id', getRestaurantById, deleteRestaurant, restricTo('admin'));
+router.delete('/:id', getRestaurantById,  restricTo('admin'), deleteRestaurant);
 
 router.patch(
   '/reviews/:restaurantId/:id',
@@ -69,12 +70,11 @@ router.patch(
     check('rating', 'The rating must be mandatory').not().isEmpty(),
     check('rating', 'The rating must a numeric').isNumeric(),
     validateFields,
-    restricTo('admin'),
   ],
   updateReview
 );
 
-router.delete('/reviews/:restaurantId/:id', deleteReview, restricTo('admin'));
+router.delete('/reviews/:restaurantId/:id', deleteReview);
 
 module.exports = {
   restaurantsRouter: router,
