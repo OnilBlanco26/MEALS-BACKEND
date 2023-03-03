@@ -8,6 +8,7 @@ const {
   deleteRestaurant,
   createReview,
   updateReview,
+  deleteReview,
 } = require('../controllers/restaurants.controller');
 const { getRestaurantById } = require('../middlewares/restaurants.middleware');
 const { protect, restricTo } = require('../middlewares/users.middleware');
@@ -65,6 +66,8 @@ router.patch('/reviews/:restaurantId/:id', [
     validateFields,
     restricTo('admin')
 ] ,updateReview)
+
+router.delete('/reviews/:restaurantId/:id', deleteReview, restricTo('admin'))
 
 module.exports = {
   restaurantsRouter: router,
